@@ -1,22 +1,25 @@
+---
+- name: Настройка локальной веб-среды
+  hosts: local
+  become: true
+  tasks:
+    - name: Установка пакета Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
 
-  ansible-lint:
-    name: Ansible Lint
-    runs-on: ubuntu-latest
+    - name: Создание пользовательской веб-страницы
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        content: "<h1>Инфраструктура настроена через Ansible (IaC)</h1>\n"
+        owner: root
+        group: root
+        mode: "0644"
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-
-      - name: Install Ansible Lint
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install --retries 5 --timeout 60 ansible-lint
-
-      - name: Run Ansible Lint
-        run: ansible-lint ansible_iac/setup_env.yml
-
+    - name: Запуск и включение службы Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
