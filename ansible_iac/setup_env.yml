@@ -1,17 +1,18 @@
+
 ---
-- name: настройка локальной веб-среды
+- name: Настройка локальной веб-среды
   hosts: local
   become: true
 
   tasks:
-    - name: установка пакета nginx
+    - name: Установка пакета Nginx
       ansible.builtin.apt:
         name: nginx
         state: present
         update_cache: true
         cache_valid_time: 3600
 
-    - name: создание пользовательской веб-страницы
+    - name: Создание пользовательской веб-страницы
       ansible.builtin.copy:
         dest: /var/www/html/index.html
         content: "<h1>Инфраструктура настроена через Ansible (IaC)</h1>\n"
@@ -19,8 +20,9 @@
         group: root
         mode: "0644"
 
-    - name: запуск и включение службы nginx
+    - name: Запуск и включение службы Nginx
       ansible.builtin.service:
         name: nginx
         state: started
         enabled: true
+
