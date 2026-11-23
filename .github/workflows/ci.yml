@@ -1,10 +1,10 @@
 name: CI and Docker Build
 
-on:
+'on':
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   lint-and-test:
@@ -29,11 +29,25 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker Image
-        run: |
-          docker build -t my-app:${{ github.sha }} .
+        run: docker build -t my-app:${{ github.sha }} .
 
       - name: Test Docker Container
         run: |
           docker run -d -p 8080:8080 --name test_app my-app:${{ github.sha }}
           sleep 2
           curl --fail http://localhost:8080 || exit 1
+
+  ansible-lint:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main
+        with:
+          args: "ansible_iac/setup_env.yml"
+          setup_python: "true"
+          python_version: "3.12"
+
